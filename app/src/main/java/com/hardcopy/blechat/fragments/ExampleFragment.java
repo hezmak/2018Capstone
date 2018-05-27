@@ -51,6 +51,8 @@ public class ExampleFragment extends Fragment implements View.OnClickListener {
 	TextView mTextChat, textView, textView_dummy;
 	EditText mEditChat;
 	Button mBtnSend, button, button2;
+	Weather weather;
+
 
 	public ExampleFragment(Context c, IFragmentListener l, Handler h) {
 		mContext = c;
@@ -81,13 +83,19 @@ public class ExampleFragment extends Fragment implements View.OnClickListener {
 		button.setOnClickListener(this);
 		button2.setOnClickListener(this);
 
+		weather = new Weather();
 		final Context context = this.getContext();
-		
+
+
+
 		return rootView;
 	}
 	
 	@Override
 	public void onClick(View v) {
+
+
+
 		switch(v.getId()) {
 		case R.id.button_send:
             String message = mEditChat.getText().toString();
@@ -171,10 +179,12 @@ public class ExampleFragment extends Fragment implements View.OnClickListener {
     private static final int NEW_LINE_INTERVAL = 1000;
     private long mLastReceivedTime = 0L;
 	String[] word;
-	float finedust=0;
+	float finedust=10.7f;
 
 	// Show messages from remote
     public void showMessage(String message) {
+
+
     	if(message != null && message.length() > 0) {
     		long current = System.currentTimeMillis();
     		
@@ -185,6 +195,8 @@ public class ExampleFragment extends Fragment implements View.OnClickListener {
 
 					word = textView_dummy.getText().toString().split("dustdensity\\(ug\\)\\:");
 					finedust = Float.parseFloat(word[1]);
+					weather.setDustdensity(finedust);
+
 
 					//mEditChat.setText(finedust);
 

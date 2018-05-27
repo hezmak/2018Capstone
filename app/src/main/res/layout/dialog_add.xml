@@ -14,6 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+
             android:gravity="center_vertical|center_horizontal"
             android:padding="10dp"
             android:text="CAUTION!!"
@@ -25,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="10dp"
-            android:text="미세먼지의 농도가 높습니다. 확인 버튼을 누르면 자동으로 알림 문자가 보내집니다."
+            android:text="Fine dust concentration is too high. Be carefull!!"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
         <EditText
@@ -38,7 +39,7 @@
             android:layout_marginTop="4dp"
             android:layout_weight="1"
             android:fontFamily="sans-serif"
-            android:hint="상대방의 휴대폰 번호" />
+            android:hint="Phone number of person to receive SMS" />
     </LinearLayout>
 
 </LinearLayout>
