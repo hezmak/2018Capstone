@@ -108,21 +108,6 @@ public class ExampleFragment extends Fragment implements View.OnClickListener {
 
 			Toast.makeText (this.mContext, "START", Toast.LENGTH_SHORT).show();
 
-			final addDialogFragment dialog = addDialogFragment.newInstance(new addDialogFragment.NameInputListener() {
-				@Override
-				public void onNameInputComplete(String name) {
-					if(name != null) {
-
-						SmsManager sms = SmsManager.getDefault();
-						sms.sendTextMessage(name, null, sms_data, null, null);
-
-					}
-				}
-			});
-			dialog.show(getFragmentManager(), "addDialog");
-
-
-
 
 
 
@@ -220,6 +205,20 @@ public class ExampleFragment extends Fragment implements View.OnClickListener {
 					else{
 						textView.setBackgroundResource(R.drawable.bad01);
 						textView.setText("Fine Dust: Bad");
+
+						final addDialogFragment dialog = addDialogFragment.newInstance(new addDialogFragment.NameInputListener() {
+							@Override
+							public void onNameInputComplete(String name) {
+								if(name != null) {
+
+									SmsManager sms = SmsManager.getDefault();
+									sms.sendTextMessage(name, null, sms_data, null, null);
+
+								}
+							}
+						});
+						dialog.show(getFragmentManager(), "addDialog");
+
 					}
 
 				}
