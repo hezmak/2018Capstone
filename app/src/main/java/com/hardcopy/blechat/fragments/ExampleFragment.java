@@ -179,6 +179,7 @@ public class ExampleFragment extends Fragment implements View.OnClickListener {
     private static final int NEW_LINE_INTERVAL = 1000;
     private long mLastReceivedTime = 0L;
 	String[] word;
+	String[] parse;
 	float finedust=10.7f;
 
 	// Show messages from remote
@@ -191,14 +192,22 @@ public class ExampleFragment extends Fragment implements View.OnClickListener {
     		if(current - mLastReceivedTime > NEW_LINE_INTERVAL) {
     			mTextChat.append("\nRcv: ");
 
-				if(textView_dummy.getText().toString().contains("dustdensity(ug):")){
+				if(textView_dummy.getText().toString().contains("]")){
 
-					word = textView_dummy.getText().toString().split("dustdensity\\(ug\\)\\:");
-					finedust = Float.parseFloat(word[1]);
+					word = textView_dummy.getText().toString().split("/");
+
+
+					parse = word[0].toString().split(":");
+					float humidity = Float.parseFloat(parse[1]);
+					parse = word[1].toString().split(":");
+					float temperature = Float.parseFloat(parse[1]);
+					parse = word[2].toString().split(":");
+					float finedust = Float.parseFloat(parse[1]);
+
+
 					weather.setDustdensity(finedust);
-
-
-					//mEditChat.setText(finedust);
+					weather.setHumidity(humidity);
+					weather.setTemperature(temperature);
 
 					if(finedust < 30.0){
 						textView.setBackgroundResource(R.drawable.good01);

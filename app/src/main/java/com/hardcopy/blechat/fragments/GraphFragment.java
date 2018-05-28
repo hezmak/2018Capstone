@@ -24,7 +24,9 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.hardcopy.blechat.R;
 import com.hardcopy.blechat.R.id;
 import com.hardcopy.blechat.R.layout;
@@ -47,6 +49,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -62,6 +65,7 @@ public class GraphFragment extends Fragment {
     LineChart mLineChart;
 
     static int counter = 1;
+    float temp=0.0f;
 
     Weather weather;
 
@@ -69,6 +73,9 @@ public class GraphFragment extends Fragment {
         mContext = c;
         mFragmentListener = l;
     }
+
+
+
 
 
     private void addEntry(float x, float y)
@@ -93,13 +100,13 @@ public class GraphFragment extends Fragment {
 
         }
 
-        float rV1 = (float)(Math.floor(Math.random() * (600 - 15 + 1)) + 15);
-        float rV2 = (float)(Math.floor(Math.random() * (400 - 15 + 1)) + 15);
+        //float rV1 = (float)(Math.floor(Math.random() * (600 - 15 + 1)) + 15);
+        //float rV2 = (float)(Math.floor(Math.random() * (400 - 15 + 1)) + 15);
 
         //Add the measurement to the chart.
         set.addEntry(new Entry(x, y));
-        set1.addEntry(new Entry(counter, rV1));
-        set2.addEntry(new Entry(counter, rV2));
+        set1.addEntry(new Entry(counter, weather.getHumidity()));
+        set2.addEntry(new Entry(counter, weather.getTemperature()));
 
         //Round robin the set.
         while(set.getEntryCount() > 10)
@@ -131,14 +138,15 @@ public class GraphFragment extends Fragment {
         new CountDownTimer(3000000, 3000) {
 
         public void onTick(long millisUntilFinished) {
-            float randomValue = (float)(Math.floor(Math.random() * (200 - 15 + 1)) + 15);
-
-            Toast.makeText (mContext, Float.toString(randomValue)+"/"+String.valueOf(counter), Toast.LENGTH_SHORT).show();
-
+            //float randomValue = (float)(Math.floor(Math.random() * (200 - 15 + 1)) + 15);
+            //Toast.makeText (mContext, Float.toString(weather.getDustdensity())+"/"+String.valueOf(counter), Toast.LENGTH_SHORT).show();
             //Entry newEntry = new Entry((float) randomValue, indexOfMyLine);
+            if(temp != weather.getDustdensity()){
+                addEntry(counter, weather.getDustdensity());
+                counter++;
+            }
 
-            addEntry(counter, randomValue);
-            counter++;
+            temp = weather.getDustdensity();
         }
 
 
@@ -190,6 +198,7 @@ public class GraphFragment extends Fragment {
         dataSets.add(setComp3);
 
         LineData data = new LineData(dataSets);
+        data.setValueFormatter(new MyValueFormatter());
         mLineChart.setData(data);
         mLineChart.invalidate(); // refresh
 
