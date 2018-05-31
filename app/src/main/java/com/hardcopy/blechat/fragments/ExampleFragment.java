@@ -217,11 +217,13 @@ public class ExampleFragment extends Fragment implements View.OnClickListener {
 
 			if (current - mLastReceivedTime > NEW_LINE_INTERVAL) {
 				mTextChat.append("\nRcv: ");
+				Log.d("RCV", "Received");
 
 				if (textView_dummy.getText().toString().contains("]")) {
 
 					word = textView_dummy.getText().toString().split("/");
 
+					//Toast.makeText(mContext, word.toString()+"^", Toast.LENGTH_SHORT).show();
 
 					parse = word[0].toString().split(":");
 					float humidity = Float.parseFloat(parse[1]);
@@ -235,16 +237,8 @@ public class ExampleFragment extends Fragment implements View.OnClickListener {
 					weather.setHumidity(humidity);
 					weather.setTemperature(temperature);
 
-/*
-					if (!validate()) {
-					} else {
-						// call AsynTask to perform network operation on separate thread
-						HttpAsyncTask httpTask = new HttpAsyncTask((MainActivity) getActivity());
 
-						httpTask.execute("https://dadalhwa.appspot.com/getdata",
-								Float.toString(weather.getDustdensity()), Float.toString(weather.getHumidity()), Float.toString(weather.getTemperature()));
-					}
-*/
+
 						if (finedust < 30.0) {
 							textView.setBackgroundResource(R.drawable.good01);
 							textView.setText("Fine Dust: Good");

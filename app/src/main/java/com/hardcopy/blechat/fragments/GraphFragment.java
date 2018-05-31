@@ -125,15 +125,15 @@ public class GraphFragment extends Fragment {
 
         //테스트
         ///*
-        float rV1 = (float)(Math.floor(Math.random() * (600 - 15 + 1)) + 15);
-        float rV2 = (float)(Math.floor(Math.random() * (400 - 15 + 1)) + 15);
-        set1.addEntry(new Entry(counter, rV1));
-        set2.addEntry(new Entry(counter, rV2));
+        //float rV1 = (float)(Math.floor(Math.random() * (600 - 15 + 1)) + 15);
+        //float rV2 = (float)(Math.floor(Math.random() * (400 - 15 + 1)) + 15);
+        //set1.addEntry(new Entry(counter, rV1));
+        //set2.addEntry(new Entry(counter, rV2));
 
 
-        weather.setHumidity(rV1);
-        weather.setTemperature(rV2);
-        weather.setLocation("team");
+        //weather.setHumidity(rV1);
+        //weather.setTemperature(rV2);
+        weather.setLocation("MyRoom");
         Date date = new Date();
         weather.setDate(date);
 
@@ -145,7 +145,7 @@ public class GraphFragment extends Fragment {
             // call AsynTask to perform network operation on separate thread
             HttpAsyncTask httpTask = new HttpAsyncTask((MainActivity) getActivity());
 
-            Toast.makeText(mContext, Float.toString(weather.getDustdensity()), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(mContext, Float.toString(weather.getDustdensity()), Toast.LENGTH_SHORT).show();
             httpTask.execute("https://dadalhwa.appspot.com/getdata",
                     Float.toString(weather.getDustdensity()), Float.toString(weather.getHumidity()),
                     Float.toString(weather.getTemperature()), dateFormat.format(weather.getDate()), weather.getLocation());
@@ -153,8 +153,8 @@ public class GraphFragment extends Fragment {
 //*/
         //Add the measurement to the chart.
         set.addEntry(new Entry(x, y));
-        //set1.addEntry(new Entry(counter, weather.getHumidity()));
-        //set2.addEntry(new Entry(counter, weather.getTemperature()));
+        set1.addEntry(new Entry(counter, weather.getHumidity()));
+        set2.addEntry(new Entry(counter, weather.getTemperature()));
 
         //Round robin the set.
         while(set.getEntryCount() > 10)
@@ -183,20 +183,21 @@ public class GraphFragment extends Fragment {
 
 
 
-        new CountDownTimer(3000000, 10000) {
+        new CountDownTimer(3000000, 3000) {
 
         public void onTick(long millisUntilFinished) {
-            float randomValue = (float)(Math.floor(Math.random() * (200 - 15 + 1)) + 15);
-            addEntry(counter, randomValue);
-            counter++;
-            weather.setDustdensity(randomValue);
+            //float randomValue = (float)(Math.floor(Math.random() * (200 - 15 + 1)) + 15);
+            //addEntry(counter, randomValue);
+            //counter++;
+            //weather.setDustdensity(randomValue);
 
-            /*
+            //Toast.makeText(mContext, Float.toString(weather.getDustdensity())+"/", Toast.LENGTH_SHORT).show();
+
             if(temp != weather.getDustdensity()){
                 addEntry(counter, weather.getDustdensity());
                 counter++;
             }
-            */
+
 
             temp = weather.getDustdensity();
         }
@@ -386,7 +387,7 @@ public class GraphFragment extends Fragment {
             super.onPostExecute(result);
 
 
-            Toast.makeText (this.mainAct, result, Toast.LENGTH_SHORT).show();
+            //Toast.makeText (this.mainAct, result, Toast.LENGTH_SHORT).show();
 
             //mainAct.tvResponse.setText(result);
             strJson = result;
@@ -399,7 +400,6 @@ public class GraphFragment extends Fragment {
                         //mEditChat.setText(json.toString(1));
 
                         //Toast.makeText (mainAct, strJson, Toast.LENGTH_LONG).show();
-
 
                     } catch (JSONException e) {
                         e.printStackTrace();
