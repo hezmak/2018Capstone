@@ -11,7 +11,7 @@ public class Weather {
     private static float humidity;
     private static float temperature;
     private static float dustdensity;
-    private static String address;
+    private static String location;
     private static Date date;
 
     public static Date getDate() {
@@ -22,9 +22,13 @@ public class Weather {
         Weather.date = date;
     }
 
-    public static String getAddress() { return address; }
+    public static String getLocation() {
+        return location;
+    }
 
-    public static void setAddress(String address) { Weather.address = address; }
+    public static void setLocation(String location) {
+        Weather.location = location;
+    }
 
     public float getHumidity() {
         return humidity;

@@ -65,8 +65,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -75,6 +79,7 @@ public class GraphFragment extends Fragment {
 
     private Context mContext = null;
     private IFragmentListener mFragmentListener = null;
+    static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 
     private CheckBox mCheckBackground;
     private TextView mTextIot;
@@ -128,6 +133,12 @@ public class GraphFragment extends Fragment {
 
         weather.setHumidity(rV1);
         weather.setTemperature(rV2);
+        weather.setLocation("team");
+        Date date = new Date();
+        weather.setDate(date);
+
+        //Toast.makeText(mContext, dateFormat.format(weather.getDate()), Toast.LENGTH_SHORT).show();
+
 
         if (!validate()) {
         } else {
@@ -136,7 +147,8 @@ public class GraphFragment extends Fragment {
 
             Toast.makeText(mContext, Float.toString(weather.getDustdensity()), Toast.LENGTH_SHORT).show();
             httpTask.execute("https://dadalhwa.appspot.com/getdata",
-                    Float.toString(weather.getDustdensity()), Float.toString(weather.getHumidity()), Float.toString(weather.getTemperature()));
+                    Float.toString(weather.getDustdensity()), Float.toString(weather.getHumidity()),
+                    Float.toString(weather.getTemperature()), dateFormat.format(weather.getDate()), weather.getLocation());
         }
 //*/
         //Add the measurement to the chart.
@@ -272,13 +284,20 @@ public class GraphFragment extends Fragment {
 
             // build jsonObject
             JSONObject jsonObject = new JSONObject();
-            jsonObject.accumulate("density", weather.getDustdensity());
+            jsonObject.accumulate("value", weather.getDustdensity());
             jsonObject.accumulate("humidity", weather.getHumidity());
             jsonObject.accumulate("temperature", weather.getTemperature());
+            jsonObject.accumulate("date", dateFormat.format(weather.getDate()));
+            jsonObject.accumulate("location", weather.getLocation());
+
 
             // convert JSONObject to JSON to String
             json = jsonObject.toString();
-            Log.d("help", json);
+            Log.d("help", jsonObject.get("value").toString());
+            Log.d("help", jsonObject.get("humidity").toString());
+            Log.d("help", jsonObject.get("temperature").toString());
+            Log.d("help", jsonObject.get("date").toString());
+            Log.d("help", jsonObject.get("location").toString());
 
             // ** Alternative way to convert Weather object to JSON string usin Jackson Lib
             // ObjectMapper mapper = new ObjectMapper();
@@ -319,6 +338,7 @@ public class GraphFragment extends Fragment {
             Log.d("InputStream", e.getLocalizedMessage());
         }
 
+        Log.d("helloworld", result+"ll");
         return result;
     }
 
@@ -346,7 +366,18 @@ public class GraphFragment extends Fragment {
             weather.setDustdensity(Float.valueOf(urls[1]));
             weather.setHumidity(Float.valueOf(urls[2]));
             weather.setTemperature(Float.valueOf(urls[3]));
+            try {
+                weather.setDate(dateFormat.parse(urls[4]));
+                //All your parse Operations
+            } catch (ParseException e) {
+                //Handle exception here, most of the time you will just log it.
+                e.printStackTrace();
+            }
 
+            weather.setLocation(urls[5]);
+
+
+            Log.d("jsonn", urls[0]+"/"+urls[1]+'/'+urls[2]+"/"+urls[3]+"/"+urls[4]+"/"+urls[5]);
             return POST(urls[0],weather);
         }
         // onPostExecute displays the results of the AsyncTask.
