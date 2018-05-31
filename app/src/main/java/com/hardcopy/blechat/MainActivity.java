@@ -16,6 +16,13 @@
 
 package com.hardcopy.blechat;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -23,6 +30,7 @@ import com.hardcopy.blechat.R;
 import com.hardcopy.blechat.fragments.ExampleFragment;
 import com.hardcopy.blechat.fragments.FragmentAdapter;
 import com.hardcopy.blechat.fragments.IFragmentListener;
+import com.hardcopy.blechat.fragments.Weather;
 import com.hardcopy.blechat.service.BTCTemplateService;
 import com.hardcopy.blechat.utils.AppSettings;
 import com.hardcopy.blechat.utils.Constants;
@@ -40,6 +48,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -55,6 +66,10 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener, IFragmentListener {
 
@@ -78,7 +93,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 	// Refresh timer
 	private Timer mRefreshTimer = null;
-	
+
+	Weather weather;
+	static String strJson = "";
 	
 
 	/*****************************************************
@@ -512,5 +529,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			});
 		}
 	}
+
+
+
+
+
+
+
+
+
+
+
 
 }

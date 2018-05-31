@@ -27,12 +27,17 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ViewPortHandler;
+import com.hardcopy.blechat.MainActivity;
 import com.hardcopy.blechat.R;
 import com.hardcopy.blechat.R.id;
 import com.hardcopy.blechat.R.layout;
 import com.hardcopy.blechat.utils.AppSettings;
 
+import android.app.Activity;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
@@ -49,6 +54,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +84,8 @@ public class GraphFragment extends Fragment {
     float temp=0.0f;
 
     Weather weather;
+
+    static    String strJson = "";
 
     public GraphFragment(Context c, IFragmentListener l) {
         mContext = c;
@@ -100,13 +118,31 @@ public class GraphFragment extends Fragment {
 
         }
 
-        //float rV1 = (float)(Math.floor(Math.random() * (600 - 15 + 1)) + 15);
-        //float rV2 = (float)(Math.floor(Math.random() * (400 - 15 + 1)) + 15);
+        //테스트
+        ///*
+        float rV1 = (float)(Math.floor(Math.random() * (600 - 15 + 1)) + 15);
+        float rV2 = (float)(Math.floor(Math.random() * (400 - 15 + 1)) + 15);
+        set1.addEntry(new Entry(counter, rV1));
+        set2.addEntry(new Entry(counter, rV2));
 
+
+        weather.setHumidity(rV1);
+        weather.setTemperature(rV2);
+
+        if (!validate()) {
+        } else {
+            // call AsynTask to perform network operation on separate thread
+            HttpAsyncTask httpTask = new HttpAsyncTask((MainActivity) getActivity());
+
+            Toast.makeText(mContext, Float.toString(weather.getDustdensity()), Toast.LENGTH_SHORT).show();
+            httpTask.execute("https://dadalhwa.appspot.com/getdata",
+                    Float.toString(weather.getDustdensity()), Float.toString(weather.getHumidity()), Float.toString(weather.getTemperature()));
+        }
+//*/
         //Add the measurement to the chart.
         set.addEntry(new Entry(x, y));
-        set1.addEntry(new Entry(counter, weather.getHumidity()));
-        set2.addEntry(new Entry(counter, weather.getTemperature()));
+        //set1.addEntry(new Entry(counter, weather.getHumidity()));
+        //set2.addEntry(new Entry(counter, weather.getTemperature()));
 
         //Round robin the set.
         while(set.getEntryCount() > 10)
@@ -135,16 +171,20 @@ public class GraphFragment extends Fragment {
 
 
 
-        new CountDownTimer(3000000, 3000) {
+        new CountDownTimer(3000000, 10000) {
 
         public void onTick(long millisUntilFinished) {
-            //float randomValue = (float)(Math.floor(Math.random() * (200 - 15 + 1)) + 15);
-            //Toast.makeText (mContext, Float.toString(weather.getDustdensity())+"/"+String.valueOf(counter), Toast.LENGTH_SHORT).show();
-            //Entry newEntry = new Entry((float) randomValue, indexOfMyLine);
+            float randomValue = (float)(Math.floor(Math.random() * (200 - 15 + 1)) + 15);
+            addEntry(counter, randomValue);
+            counter++;
+            weather.setDustdensity(randomValue);
+
+            /*
             if(temp != weather.getDustdensity()){
                 addEntry(counter, weather.getDustdensity());
                 counter++;
             }
+            */
 
             temp = weather.getDustdensity();
         }
@@ -207,6 +247,163 @@ public class GraphFragment extends Fragment {
 
         return rootView;
     }
+
+
+
+
+
+
+
+
+
+
+    //수정본
+
+
+
+    public static String POST(String url, Weather weather){
+        InputStream is = null;
+        String result = "";
+        try {
+            URL urlCon = new URL(url);
+            HttpURLConnection httpCon = (HttpURLConnection)urlCon.openConnection();
+
+            String json = "";
+
+            // build jsonObject
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.accumulate("density", weather.getDustdensity());
+            jsonObject.accumulate("humidity", weather.getHumidity());
+            jsonObject.accumulate("temperature", weather.getTemperature());
+
+            // convert JSONObject to JSON to String
+            json = jsonObject.toString();
+            Log.d("help", json);
+
+            // ** Alternative way to convert Weather object to JSON string usin Jackson Lib
+            // ObjectMapper mapper = new ObjectMapper();
+            // json = mapper.writeValueAsString(weather);
+
+            // Set some headers to inform server about the type of the content
+            httpCon.setRequestProperty("Accept", "application/json");
+            httpCon.setRequestProperty("Content-type", "application/json");
+
+            // OutputStream으로 POST 데이터를 넘겨주겠다는 옵션.
+            httpCon.setDoOutput(true);
+            // InputStream으로 서버로 부터 응답을 받겠다는 옵션.
+            httpCon.setDoInput(true);
+
+            OutputStream os = httpCon.getOutputStream();
+            os.write(json.getBytes("euc-kr"));
+            os.flush();
+            // receive response as inputStream
+            try {
+                is = httpCon.getInputStream();
+                // convert inputstream to string
+                if(is != null)
+                    result = convertInputStreamToString(is);
+                else
+                    result = "Did not work!";
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+            finally {
+                httpCon.disconnect();
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        catch (Exception e) {
+            Log.d("InputStream", e.getLocalizedMessage());
+        }
+
+        return result;
+    }
+
+    public boolean isConnected(){
+        ConnectivityManager connMgr = (ConnectivityManager) mContext.getSystemService(Activity.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected())
+            return true;
+        else
+            return false;
+    }
+
+
+    private class HttpAsyncTask extends AsyncTask<String, Void, String> {
+
+        private   MainActivity mainAct;
+
+        HttpAsyncTask(MainActivity mainActivity) {
+            this.mainAct = mainActivity;
+        }
+        @Override
+        protected String doInBackground(String... urls) {
+
+            weather = new Weather();
+            weather.setDustdensity(Float.valueOf(urls[1]));
+            weather.setHumidity(Float.valueOf(urls[2]));
+            weather.setTemperature(Float.valueOf(urls[3]));
+
+            return POST(urls[0],weather);
+        }
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+
+            Toast.makeText (this.mainAct, result, Toast.LENGTH_SHORT).show();
+
+            //mainAct.tvResponse.setText(result);
+            strJson = result;
+            mainAct.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(mainAct, "Received!", Toast.LENGTH_SHORT).show();
+                    try {
+                        JSONArray json = new JSONArray(strJson);
+                        //mEditChat.setText(json.toString(1));
+
+                        //Toast.makeText (mainAct, strJson, Toast.LENGTH_LONG).show();
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+        }
+    }
+
+    private boolean validate(){
+        if(Float.toString(weather.getDustdensity()).trim().equals(""))
+            return false;
+        else if(Float.toString(weather.getHumidity()).trim().equals(""))
+            return false;
+        else if(Float.toString(weather.getTemperature()).trim().equals(""))
+            return false;
+        else
+            return true;
+    }
+    private static String convertInputStreamToString(InputStream inputStream) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+        String line = "";
+        String result = "";
+        while((line = bufferedReader.readLine()) != null)
+            result += line;
+
+        inputStream.close();
+        return result;
+
+    }
+
+
+
+
 
 
 }
