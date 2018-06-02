@@ -133,7 +133,7 @@ public class GraphFragment extends Fragment {
 
         //weather.setHumidity(rV1);
         //weather.setTemperature(rV2);
-        weather.setLocation("MyRoom");
+        //weather.setLocation("6P");
         Date date = new Date();
         weather.setDate(date);
 

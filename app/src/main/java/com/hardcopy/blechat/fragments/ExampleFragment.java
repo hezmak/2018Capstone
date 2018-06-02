@@ -86,8 +86,8 @@ public class ExampleFragment extends Fragment implements View.OnClickListener {
 	String sms_data = "Fine dust concentration is too high. Be carefull!!";
 
 	TextView mTextChat, textView, textView_dummy;
-	EditText mEditChat;
-	Button mBtnSend, button, button2;
+	EditText mEditChat, editText;
+	Button mBtnSend, button, button2, button3, button4, button5;
 
 	Weather weather;
 
@@ -116,12 +116,20 @@ public class ExampleFragment extends Fragment implements View.OnClickListener {
 		mEditChat = (EditText) rootView.findViewById(R.id.edit_chat);
 		mEditChat.setOnEditorActionListener(mWriteListener);
 
+        editText = (EditText) rootView.findViewById(R.id.editText);
+
 		mBtnSend = (Button) rootView.findViewById(R.id.button_send);
 		button = (Button) rootView.findViewById(R.id.button);
 		button2 = (Button) rootView.findViewById(R.id.button2);
+        button3 = (Button) rootView.findViewById(R.id.button3);
+        button4 = (Button) rootView.findViewById(R.id.button4);
+        button5 = (Button) rootView.findViewById(R.id.button5);
 		mBtnSend.setOnClickListener(this);
 		button.setOnClickListener(this);
 		button2.setOnClickListener(this);
+		button3.setOnClickListener(this);
+		button4.setOnClickListener(this);
+		button5.setOnClickListener(this);
 
 		weather = new Weather();
 		final Context context = this.getContext();
@@ -145,12 +153,20 @@ public class ExampleFragment extends Fragment implements View.OnClickListener {
 			case R.id.button:
 				message = "Start";
 
+				editText.setClickable(false);
+				editText.setFocusable(false);
+				String location = editText.getText().toString().trim();
+				location = location.replaceAll(" ","");
+				location = location.replaceAll("\\p{Z}", "");
 
+
+                if(location == "") {
+					weather.setLocation("default");
+                }
+                else {
+                    weather.setLocation(location);
+                }
 				Toast.makeText (this.mContext, "START", Toast.LENGTH_SHORT).show();
-
-
-
-
 
 				button.setEnabled(false);
 				button2.setEnabled(true);
@@ -158,10 +174,31 @@ public class ExampleFragment extends Fragment implements View.OnClickListener {
 				break;
 			case R.id.button2:
 				message = "Stop";
+
+				editText.setFocusableInTouchMode(true);
+				editText.setClickable(true);
+				editText.setFocusable(true);
+
 				button.setEnabled(true);
 				button2.setEnabled(false);
 				sendMessage(message);
 				break;
+            case R.id.button3:
+                message = "Usual";
+                sendMessage(message);
+                break;
+            case R.id.button4:
+                message = "F/OFF";
+                button5.setEnabled(true);
+                button4.setEnabled(false);
+                sendMessage(message);
+                break;
+            case R.id.button5:
+                message = "F/ON";
+                button4.setEnabled(true);
+                button5.setEnabled(false);
+                sendMessage(message);
+                break;
 
 		}
 	}
