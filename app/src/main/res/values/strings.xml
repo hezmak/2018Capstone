@@ -40,4 +40,6 @@
     <string name="connect">Connect\na device</string>
     <string name="discoverable">Make\ndiscoverable</string>
 
+    <string name="about_link"><a href='http://example.com'>http://dadalhwa.appspot.com/expectation</a></string>
+
 </resources>

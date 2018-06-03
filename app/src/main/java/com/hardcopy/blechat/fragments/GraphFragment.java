@@ -88,6 +88,8 @@ public class GraphFragment extends Fragment {
     static int counter = 1;
     float temp=0.0f;
 
+    TextView textView4;
+
     Weather weather;
 
     static    String strJson = "";
@@ -178,6 +180,7 @@ public class GraphFragment extends Fragment {
 
         View rootView = inflater.inflate(layout.fragment_graph, container, false);
         mLineChart = (LineChart)rootView.findViewById(R.id.chart);
+
 
 
 
